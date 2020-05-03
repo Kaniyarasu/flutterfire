@@ -353,6 +353,7 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
       PhoneVerificationFailed verificationFailed,
       PhoneCodeSent codeSent,
       PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout}) async {
+    print('Checking recaptacha');
     if (window.document.getElementById('recaptcha-container') == null) {
       window.document.documentElement.children
           .add(DivElement()..id = 'recaptcha-container');

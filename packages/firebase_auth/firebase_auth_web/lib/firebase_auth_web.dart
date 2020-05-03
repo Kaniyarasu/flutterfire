@@ -361,7 +361,7 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
 
     window.recaptchaVerifier =
         firebase.RecaptchaVerifier('recaptcha-container', {
-      'size': 'normal',
+      'size': 'invisible',
       'callback': (resp) {
         firebase.ConfirmationResult _confirmationResult;
         try {

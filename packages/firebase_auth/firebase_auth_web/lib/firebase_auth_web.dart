@@ -353,9 +353,9 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
       PhoneVerificationFailed verificationFailed,
       PhoneCodeSent codeSent,
       PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout}) async {
-    if (window.document.getElementById("recaptcha-container") == null) {
+    if (window.document.getElementById('recaptcha-container') == null) {
       window.document.documentElement.children
-          .add(DivElement()..id = "recaptcha-container");
+          .add(DivElement()..id = 'recaptcha-container');
     }
 
     firebase.RecaptchaVerifier verifier =
@@ -369,6 +369,7 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
         } on AuthException catch (e) {
           verificationFailed(e);
         } catch (error) {
+          grecaptcha.reset(window.recaptchaWidgetId);
           verificationFailed(AuthException('verificationFailed', error.toString()));
         }
         if (_confirmationResult != null) {
@@ -376,10 +377,12 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
         }
       },
       'expired-callback': () {
-        verificationFailed(
-            AuthException('expired-callback', 'reCAPTCHA expired'));
+        verificationFailed(AuthException('expired-callback', 'reCAPTCHA expired'));
       }
     });
-  }
-  verifier.render();
+    
+    recaptchaVerifier.render().then(function(widgetId) {
+      window.recaptchaWidgetId = widgetId;
+    });
+  } 
 }

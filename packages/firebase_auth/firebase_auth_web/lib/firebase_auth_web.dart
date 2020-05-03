@@ -362,7 +362,6 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
         firebase.RecaptchaVerifier('recaptcha-container', {
       'size': 'invisible',
       'callback': (resp) {
-        verifier.render();
         firebase.ConfirmationResult _confirmationResult;
         try {
           _confirmationResult =
@@ -382,4 +381,5 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
       }
     });
   }
+  verifier.render();
 }

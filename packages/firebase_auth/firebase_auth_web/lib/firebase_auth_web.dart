@@ -353,38 +353,34 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
       PhoneVerificationFailed verificationFailed,
       PhoneCodeSent codeSent,
       PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout}) async {
-    print('Checking recaptacha');
-    if (window.document.getElementById('recaptcha-container') == null) {
+    if (window.document.getElementById("recaptcha-container") == null) {
       window.document.documentElement.children
-          .add(DivElement()..id = 'recaptcha-container');
+          .add(DivElement()..id = "recaptcha-container");
     }
-
-    window.recaptchaVerifier =
+    
+    firebase.RecaptchaVerifier verifier =
         firebase.RecaptchaVerifier('recaptcha-container', {
       'size': 'invisible',
       'callback': (resp) {
-        firebase.ConfirmationResult _confirmationResult;
-        try {
-          var appVerifier = window.recaptchaVerifier;
-          _confirmationResult =
-            await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
-        } on AuthException catch (e) {
-          verificationFailed(e);
-        } catch (error) {
-          grecaptcha.reset(window.recaptchaWidgetId);
-          verificationFailed(AuthException('verificationFailed', error.toString()));
-        }
-        if (_confirmationResult != null) {
-          codeSent(_confirmationResult.verificationId);
-        }
+        
       },
       'expired-callback': () {
-        verificationFailed(AuthException('expired-callback', 'reCAPTCHA expired'));
+        verificationFailed(
+            AuthException('expired-callback', 'reCAPTCHA expired'));
       }
     });
-    
-    recaptchaVerifier.render().then(function(widgetId) {
-      window.recaptchaWidgetId = widgetId;
-    });
+    verifier.render();
+    firebase.ConfirmationResult _confirmationResult;
+    try {
+      _confirmationResult =
+          await firebase.auth().signInWithPhoneNumber(phoneNumber, verifier);
+    } on AuthException catch (e) {
+      verificationFailed(e);
+    } catch (error) {
+      verificationFailed(AuthException('verificationFailed', error.toString()));
+    }
+    if (_confirmationResult != null) {
+      codeSent(_confirmationResult.verificationId);
+    }
   } 
 }

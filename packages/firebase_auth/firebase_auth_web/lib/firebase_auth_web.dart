@@ -362,25 +362,24 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
         firebase.RecaptchaVerifier('recaptcha-container', {
       'size': 'invisible',
       'callback': (resp) {
-        print('reCAPTCHA solved, allow signInWithPhoneNumber.');
+        verifier.render();
+        firebase.ConfirmationResult _confirmationResult;
+        try {
+          _confirmationResult =
+            await firebase.auth().signInWithPhoneNumber(phoneNumber, verifier);
+        } on AuthException catch (e) {
+          verificationFailed(e);
+        } catch (error) {
+          verificationFailed(AuthException('verificationFailed', error.toString()));
+        }
+        if (_confirmationResult != null) {
+          codeSent(_confirmationResult.verificationId);
+        }
       },
       'expired-callback': () {
         verificationFailed(
             AuthException('expired-callback', 'reCAPTCHA expired'));
       }
     });
-    verifier.render();
-    firebase.ConfirmationResult _confirmationResult;
-    try {
-      _confirmationResult =
-          await firebase.auth().signInWithPhoneNumber(phoneNumber, verifier);
-    } on AuthException catch (e) {
-      verificationFailed(e);
-    } catch (error) {
-      verificationFailed(AuthException('verificationFailed', error.toString()));
-    }
-    if (_confirmationResult != null) {
-      codeSent(_confirmationResult.verificationId);
-    }
   }
 }

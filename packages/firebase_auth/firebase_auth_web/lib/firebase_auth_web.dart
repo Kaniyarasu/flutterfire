@@ -358,14 +358,15 @@ class FirebaseAuthWeb extends FirebaseAuthPlatform {
           .add(DivElement()..id = 'recaptcha-container');
     }
 
-    firebase.RecaptchaVerifier verifier =
+    window.recaptchaVerifier =
         firebase.RecaptchaVerifier('recaptcha-container', {
-      'size': 'invisible',
+      'size': 'normal',
       'callback': (resp) {
         firebase.ConfirmationResult _confirmationResult;
         try {
+          var appVerifier = window.recaptchaVerifier;
           _confirmationResult =
-            await firebase.auth().signInWithPhoneNumber(phoneNumber, verifier);
+            await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         } on AuthException catch (e) {
           verificationFailed(e);
         } catch (error) {
